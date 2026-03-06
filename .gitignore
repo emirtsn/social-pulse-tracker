@@ -1,0 +1,16 @@
+# Python ayarları
+venv/
+__pycache__/
+*.py[cod]
+
+# IDE ayarları (Mac/PyCharm özel)
+.idea/
+.DS_Store
+
+# ÖZEL VERİLER (Burası hayati!)
+config.py
+.env
+
+# Veritabanı ve geçici dosyalar
+*.db
+*.sqlite3
