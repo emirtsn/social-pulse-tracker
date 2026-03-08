@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 from scipy.stats import pearsonr
 
-# Gerekli NLTK paketlerini bir kez indiriyoruz
+
 nltk.download('wordnet', quiet=True)
 nltk.download('stopwords', quiet=True)
 
@@ -16,7 +16,6 @@ class SocialPulseAnalytics:
     def __init__(self):
         self.lemmatizer = WordNetLemmatizer()
         self.stop_words = set(stopwords.words('english'))
-        # Teknik terimleri stop_words listesine ekleyebiliriz
         self.stop_words.update(['http', 'https', 'co', 'rt', 'amp'])
 
     def clean_text(self, text):
@@ -26,8 +25,7 @@ class SocialPulseAnalytics:
                   if w not in self.stop_words and len(w) > 2]
         return " ".join(tokens)
 
-    def get_topics(self, texts, n_topics=3):
-        """LDA ile gizli konu başlıklarını bulur."""
+    def get_topics(self, texts, n_topics=2):
         if len(texts) < 10: return ["Yetersiz Veri"]
 
         cleaned_texts = [self.clean_text(t) for t in texts]
@@ -38,11 +36,21 @@ class SocialPulseAnalytics:
         lda.fit(data_vectorized)
 
         words = vectorizer.get_feature_names_out()
-        topics = []
+        topic_results = []
+        used_words = set()
+
         for topic in lda.components_:
-            top_indices = topic.argsort()[:-6:-1]
-            topics.append(" + ".join([words[i] for i in top_indices]))
-        return topics
+            top_indices = topic.argsort()[::-1]
+            current_topic_words = []
+
+            for idx in top_indices:
+                word = words[idx]
+                if word not in used_words and len(current_topic_words) < 5:
+                    current_topic_words.append(word)
+                    used_words.add(word)
+
+            topic_results.append(" • ".join(current_topic_words))
+        return topic_results
 
     def calculate_pulse_index(self, sentiments):
         """
@@ -55,8 +63,10 @@ class SocialPulseAnalytics:
 
     def get_market_correlation(self, sentiments, prices):
         """Duygu ve Fiyat arasındaki Pearson korelasyonunu hesaplar."""
-        if len(sentiments) < 5 or len(sentiments) != len(prices):
+        if len(sentiments) < 5 or len(set(prices)) < 2:
             return 0.0
-        # Pearson Katsayısı (r) hesaplama
-        corr, _ = pearsonr(sentiments, prices)
-        return round(corr, 4)
+        try:
+            corr, _ = pearsonr(sentiments, prices)
+            return round(corr, 4) if not np.isnan(corr) else 0.0
+        except:
+            return 0.0

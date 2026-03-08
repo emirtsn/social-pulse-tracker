@@ -1,13 +1,12 @@
-# Python ayarları
 venv/
 __pycache__/
 *.py[cod]
 
-# IDE ayarları (Mac/PyCharm özel)
+# IDE ayarları
 .idea/
 .DS_Store
 
-# ÖZEL VERİLER (Burası hayati!)
+# ÖZEL VERİLER
 config.py
 .env
 

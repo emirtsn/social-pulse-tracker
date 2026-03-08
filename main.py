@@ -14,9 +14,9 @@ analyzer = SentimentIntensityAnalyzer()
 
 TECH_MAP = {
     "Generative_AI": {
-        "OpenAI": "MSFT",    # OpenAI'ın en büyük ortağı
+        "OpenAI": "MSFT",
         "ChatGPT": "MSFT",
-        "Claude": "GOOGL",   # Anthropic ortağı Google/Amazon
+        "Claude": "GOOGL",
         "Gemini AI": "GOOGL"
     },
     "Semiconductors": {
@@ -33,11 +33,6 @@ TECH_MAP = {
         "Tesla": "TSLA",
         "Amazon": "AMZN"
     },
-    "Infrastructure": {
-        "Docker": None,      # Borsada yok, sadece sosyal medya takibi
-        "Kubernetes": None,
-        "PostgreSQL": None
-    }
 }
 
 def clean_text(text):
@@ -129,11 +124,10 @@ def run_pipeline():
 
 if __name__ == "__main__":
     logging.info("⚙️ Sistem başlatıldı. Her 30 dakikada bir veri toplanacak...")
-    run_pipeline() # Hemen bir tur çalıştır
+    run_pipeline()
 
-    # Ardından her 30 dakikada bir uyanacak şekilde ayarla
     scheduler = BlockingScheduler()
-    scheduler.add_job(run_pipeline, 'interval', minutes=10)
+    scheduler.add_job(run_pipeline, 'interval', minutes=30)
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
