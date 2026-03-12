@@ -7,7 +7,7 @@ from atproto import Client
 from apscheduler.schedulers.blocking import BlockingScheduler
 import config
 import time
-from datetime import datetime
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 analyzer = SentimentIntensityAnalyzer()
@@ -36,19 +36,16 @@ TECH_MAP = {
 }
 
 def clean_text(text):
-    """Metni linklerden ve etiketlerden arındırır."""
     text = re.sub(r'http\S+', '', text)
     text = re.sub(r'@\S+', '', text)
     return text.strip()
 
 def analyze_sentiment_vader(text):
-    """VADER ile hassas analiz: Compound skoru (-1 ile +1 arası) döner."""
     scores = analyzer.polarity_scores(text)
     return scores['compound'], scores['pos'], scores['neg']
 
 
 def save_to_db(cursor, data):
-    """Tek bir satır veriyi PostgreSQL'e yazar."""
     query = """
             INSERT INTO tech_buzz_trends
             (created_at, author_handle, post_text, sentiment_polarity, sentiment_subjectivity, keyword, category)
@@ -58,7 +55,6 @@ def save_to_db(cursor, data):
     cursor.execute(query, data)
 
 def fetch_stock_price(cursor, symbol):
-    """Hisse fiyatını çeker ve kaydeder."""
     try:
         ticker = yf.Ticker(symbol)
         hist = ticker.history(period="1d")
@@ -79,11 +75,9 @@ def fetch_stock_price(cursor, symbol):
 
 def run_pipeline():
     try:
-        # BlueSky Giriş
         client = Client()
         client.login(config.BSKY_HANDLE, config.BSKY_PASSWORD)
 
-        # DB Bağlantısı
         conn = psycopg2.connect(**config.DB_CONFIG)
         cur = conn.cursor()
 

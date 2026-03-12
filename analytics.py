@@ -1,6 +1,5 @@
 import re
 import numpy as np
-import pandas as pd
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -19,7 +18,7 @@ class SocialPulseAnalytics:
         self.stop_words.update(['http', 'https', 'co', 'rt', 'amp'])
 
     def clean_text(self, text):
-        """Lemmatization destekli gelişmiş temizlik."""
+
         text = re.sub(r'http\S+|[^a-zA-Z\s]', '', text.lower())
         tokens = [self.lemmatizer.lemmatize(w) for w in text.split()
                   if w not in self.stop_words and len(w) > 2]
@@ -62,7 +61,6 @@ class SocialPulseAnalytics:
         return round(pulse_score, 4)
 
     def get_market_correlation(self, sentiments, prices):
-        """Duygu ve Fiyat arasındaki Pearson korelasyonunu hesaplar."""
         if len(sentiments) < 5 or len(set(prices)) < 2:
             return 0.0
         try:
